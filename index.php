@@ -246,10 +246,10 @@ if ($set_time == date("h:i")) {
 				,"gender"=>$gender , "item_group_id"=>$item_group_id
 				,"google_product_category"=>$google_product_category,  "material"=>$material
 				,"pattern"=>$pattern, "product_type"=>$product_type, "sale_price"=>$sale_price, "sale_price_effective_date"=>$sale_price_effective_date
-				, "shipping"=>$shipping, "shipping_weight"=>$shipping_weight, "custom_label_0"=>$custom_label_0, "custom_label_1"=>$custom_label_1
-				, "custom_label_2"=>$custom_label_2, "custom_label_3"=>$custom_label_3, "custom_label_4"=>$custom_label_4 );
+				,"shipping"=>$shipping, "shipping_weight"=>$shipping_weight, "custom_label_0"=>$custom_label_0, "custom_label_1"=>$custom_label_1
+				,"custom_label_2"=>$custom_label_2, "custom_label_3"=>$custom_label_3, "custom_label_4"=>$custom_label_4 );
 		
-				if (empty($header)) {
+				 if (empty($header)) {
 
 				 $header = array("id"=>"id", "title"=>"title", "description"=>"description",
 				 "availability"=>"availability", "condition"=>"condition", "price"=>"price",
