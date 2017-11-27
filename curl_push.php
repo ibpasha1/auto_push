@@ -41,18 +41,18 @@
     </body>
   </html>
 <?php
-include 'db.php';
+//include 'db.php';
 //Written by Ibrahim Pasha - 11/22/2017 
 
 //---------------------------------------------GET CREDS FROM USER---------------------------------------
 
-$store_id   = $mysqli->escape_string($_POST['store_id']);
-$store_url  = $mysqli->escape_string($_POST['store_url']);
-$client_id  = $mysqli->escape_string($_POST['client_id']);
-$api_key    = $mysqli->escape_string($_POST['api_key']);
-$username   = $mysqli->escape_string($_POST['username']);
-$password   = $mysqli->escape_string($_POST['password']);
-$time       = $mysqli->escape_string($_POST['time']);
+$store_id   = $_POST['store_id'];
+$store_url  = $_POST['store_url'];
+$client_id  = $_POST['client_id'];
+$api_key    = $_POST['api_key'];
+//$username   = $_POST['username'];
+//$password   = $_POST['password'];
+//$time       = $_POST['time'];
 
 
 //---------------------------------------------GET PRODUCT INFO FROM API-----------------------------------
@@ -166,13 +166,13 @@ function runcurl(&$ch, $api_url = '')
 	return $response;
 }
 
-
+sleep(2);
 //--------------------------------------------------------READ JSON FILE AND PUT DATA INTO MYSQL-------------------------------------------------------------
 $name = '';
 groove_getProducts($ch, $name);
 $json5 = groove_getProducts($ch, $name);
 $data_set_5 = json_decode($json5,JSON_PRETTY_PRINT);
-$fp = fopen('fubar.json', 'w');
+$fp = fopen('data.json', 'w');
 fwrite($fp, json_encode($data_set_5, JSON_PRETTY_PRINT));
 fclose($fp);
 
@@ -181,15 +181,18 @@ fclose($fp);
 
 
 
-$time = $GLOBALS['time'];
+//$time = $GLOBALS['time'];
 $set_date = "2017/11/22";
-$set_time = "02:34";
+//$set_time = "02:34";
+$set_time = date("h:i");
 ////echo date("Y/m/d");
 ////echo "</br>";
 //echo date("h:i");
 ///echo "</br>";
 if ($set_time == date("h:i"))
 {
+
+	sleep(10);
     //echo "True";
     //-------------------------------------------------------------------------
     function jsonToCSV($jfilename, $cfilename)
@@ -271,8 +274,8 @@ if ($set_time == date("h:i"))
 		return;
 	}
 	
-	$json_filename = 'fubar.json';
-	$csv_filename  = 'voo.csv';
+	$json_filename = 'data.json';
+	$csv_filename  = 'data.csv';
 	
 	jsonToCSV($json_filename, $csv_filename);
 	//echo  $csv_filename;
