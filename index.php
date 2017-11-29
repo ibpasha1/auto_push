@@ -56,9 +56,6 @@
                 <label class="active" for="store_id">store id</label>
                  </div>
             </div>
-  
- 
-    
                     <p class="center-align"></p>
                     <p class="center-align">
             <button class="button button1" type="submit" name="submit">create connection</button>
@@ -96,6 +93,28 @@ $store_id  = isset($_POST['store_id'])  ? $_POST['store_id']  : '';
 $store_url = isset($_POST['store_url']) ? $_POST['store_url'] : '';
 $client_id = isset($_POST['client_id']) ? $_POST['client_id'] : '';
 $api_key   = isset($_POST['api_key'])   ? $_POST['api_key']   : '';
+
+
+$v1 = $store_id;
+$v2 = $store_url;
+$v3 = $client_id;
+$v4 = $api_key;
+$cred = array($v1, $v2, $v3, $v4);
+$data = var_export($cred, true);
+$var1 = "<?php\n\n\$v1 = $data;\n\n?>";
+file_put_contents('cred.php', $var1);
+
+
+include 'cred.php';
+
+if ($store_id == '' && $store_id == '' && $client_id == '' && $api_key == '' ) 
+{
+	$v1[0] = $GLOBALS['store_id'];
+	$v1[1] = $GLOBALS['store_url'];
+	$v1[2] = $GLOBALS['client_id'];
+	$v1[3] = $GLOBALS['api_key'];
+}
+
 //---------------------------------------------GET PRODUCT INFO FROM API-----------------------------------
 function groove_trail_slash($string) 
 {
@@ -115,21 +134,18 @@ function groove_getStoreUrl()
 
 function groove_getClientID()        
 {
-  //$storeClientID = 'c7tgdh3xfzfowow03xq0bx1i6c26v4s';
-  $storeClientID = $GLOBALS['client_id'];
+    $storeClientID = $GLOBALS['client_id'];
 	return $storeClientID ?: '';
 }
 
 function groove_getStoreAccessToken()
 {
-  //$storeApiKey   = '9rkjj8o7dzkznbs7kzdymdq8pydzcc9';
-  $storeApiKey = $GLOBALS['api_key'];
+    $storeApiKey = $GLOBALS['api_key'];
 	return $storeApiKey ?: '';
 }
 
 function groove_getProduct(&$ch, $productid) 
 {
-	//$productSKU = '104';
 	$api_url = groove_trail_slash(groove_getStoreUrl()) . '/catalog/products?id='.$productid;
 	$ch = curl_init();
 	return runcurl($ch, $api_url);
@@ -137,18 +153,13 @@ function groove_getProduct(&$ch, $productid)
 
 function groove_getOrder(&$ch, $orderid)
 {
-	//$productSKU = '104';
-	//$api_url = groove_trail_slash(groove_getStoreUrl()) . '/orders/order?id='.$orderid;
 	$api_url = groove_trail_slash(groove_getStoreUrl()) . '/orders/'.$orderid.'/transactions';
-	//$api_url = groove_trail_slash(groove_getStoreUrl()) . '/orders/'.$orderid.'/transactions';
-	//https://api.bigcommerce.com/stores/{{store_id}}/v3/orders/{order_id}/transactions', headers=headers)
 	$ch = curl_init();
 	return runcurl($ch, $api_url);
 }
 
 function groove_getProducts(&$ch, $name) 
 {
-	//$productSKU = '104';
 	$api_url = groove_trail_slash(groove_getStoreUrl()) . '/catalog/products';
 	$ch = curl_init();
 	return runcurl($ch, $api_url);
@@ -196,17 +207,17 @@ function runcurl(&$ch, $api_url = '') {
 	$response = curl_exec($ch);
 	return $response;
 }
+session_start();
 sleep(2);
 $name = '';
 groove_getProducts($ch, $name);
 $json5 = groove_getProducts($ch, $name);
-$data_set_5 = json_decode($json5,JSON_PRETTY_PRINT);
+//$data_set_5 = json_decode($json5,JSON_PRETTY_PRINT);
 $set_date = "2017/11/22";
 $set_time = date("h:i");
 if ($set_time == date("h:i")) {
 	sleep(1);
-    $json5 = $GLOBALS['json5'];
-    $array = json_decode($json5, JSON_PRETTY_PRINT);
+	$array = json_decode($json5, JSON_PRETTY_PRINT);
     $fp = fopen('data.csv', 'w');
 		$header = false;
 		foreach ($array["data"] as $row)
