@@ -114,6 +114,7 @@ if ($store_id == '' && $store_id == '' && $client_id == '' && $api_key == '' )
 	$v1[2] = $GLOBALS['client_id'];
 	$v1[3] = $GLOBALS['api_key'];
 }
+// I need to add globals to this 
 
 //---------------------------------------------GET PRODUCT INFO FROM API-----------------------------------
 function groove_trail_slash($string) 
