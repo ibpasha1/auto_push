@@ -50,12 +50,7 @@
                  </div>
             </div>
 
-            <div class="row">
-        <div class="input-field col s6">
-            <input value="" id="store_id" type="text" class="validate"  name="store_id" required>
-                <label class="active" for="store_id">store id</label>
-                 </div>
-            </div>
+       
                     <p class="center-align"></p>
                     <p class="center-align">
             <button class="button button1" type="submit" name="submit">create connection</button>
@@ -109,13 +104,13 @@ include 'cred.php';
 
 if ($store_id == '' && $store_id == '' && $client_id == '' && $api_key == '' ) 
 {
-	$v1[0] = $GLOBALS['store_id'];
-	$v1[1] = $GLOBALS['store_url'];
-	$v1[2] = $GLOBALS['client_id'];
-	$v1[3] = $GLOBALS['api_key'];
+
 }
 // I need to add globals to this 
-
+$v1[0] = $GLOBALS['store_id'];
+$v1[1] = $GLOBALS['store_url'];
+$v1[2] = $GLOBALS['client_id'];
+$v1[3] = $GLOBALS['api_key'];
 //---------------------------------------------GET PRODUCT INFO FROM API-----------------------------------
 function groove_trail_slash($string) 
 {
@@ -161,14 +156,26 @@ function groove_getOrder(&$ch, $orderid)
 
 function groove_getProducts(&$ch, $name) 
 {
-	$api_url = groove_trail_slash(groove_getStoreUrl()) . '/catalog/products';
+	$api_url = groove_trail_slash(groove_getStoreUrl()) . '/catalog/products/?include=images';// LETS TAKE A LOOK
 	$ch = curl_init();
 	return runcurl($ch, $api_url);
 }
 
 function groove_getProductImage(&$ch, $productid) 
 {
-	$api_url = groove_trail_slash(groove_getStoreUrl()) . '/catalog/products/'.$productid.'/images';
+	//$api_url = groove_trail_slash(groove_getStoreUrl()) . '/catalog/products/'.$productid.'/images?limit={10000000}';
+	//$api_url = groove_trail_slash(groove_getStoreUrl()) . '/catalog/products/?include=images';// LETS TAKE A LOOK
+	$api_url = groove_trail_slash(groove_getStoreUrl()) . '/brands?=';
+	$ch = curl_init();
+	return runcurl($ch, $api_url);
+}
+
+
+function groove_getBrand(&$ch, $productid) 
+{
+	//$api_url = groove_trail_slash(groove_getStoreUrl()) . '/catalog/products/'.$productid.'/images?limit={10000000}';
+	//$api_url = groove_trail_slash(groove_getStoreUrl()) . '/catalog/products/?include=images';// LETS TAKE A LOOK
+	$api_url = groove_trail_slash(groove_getStoreUrl()) . '/catalog/brands';
 	$ch = curl_init();
 	return runcurl($ch, $api_url);
 }
@@ -210,27 +217,48 @@ function runcurl(&$ch, $api_url = '') {
 }
 session_start();
 sleep(2);
-$name = '';
+$name      = '';
+$productid  = '';
+
+// Brand call
+groove_getBrand($ch, $productid);
+$brand_name = groove_getBrand($ch, $productid);
+$data_set_6 = json_decode($brand_name,JSON_PRETTY_PRINT);
+$fp = fopen('brand.json', 'w');
+fwrite($fp, json_encode($data_set_6, JSON_PRETTY_PRINT));
+fclose($fp);
+//
+
+//Product information & image information
 groove_getProducts($ch, $name);
-$json5 = groove_getProducts($ch, $name);
-//$data_set_5 = json_decode($json5,JSON_PRETTY_PRINT);
-$set_date = "2017/11/22";
-$set_time = date("h:i");
-if ($set_time == date("h:i")) {
-	sleep(1);
+$json5 = groove_getProducts($ch, $name); // general product information
+
+$data_set_5 = json_decode($json5,JSON_PRETTY_PRINT);
+$fp = fopen('test.json', 'w');
+fwrite($fp, json_encode($data_set_5, JSON_PRETTY_PRINT));
+fclose($fp);
+//
+
+
 	$array = json_decode($json5, JSON_PRETTY_PRINT);
-    $fp = fopen('data.csv', 'w');
+    $fp = fopen('data.csv',  'w');
 		$header = false;
+		
+
 		foreach ($array["data"] as $row)
 		{
+
+			foreach ($row["images"] as $second_row) {
+				$image_link                = $second_row['url_standard'];
+			}
 				$id                        = $row['id'];
 				$title           	       = $row['name'];
 				$meta_description          = $row['meta_description'];
 				$availability              = $row['availability'];
 				$condition                 = $row['condition'];
 				$price           	       = $row['price'];
-				$link                      = $row['layout_file'];
-				$image_link                = $row['layout_file'];
+				$link                      = $row['custom_url']['url'];
+				//$image_link                = $row['images']['url_standard'];
 				$brand                     = $row['brand_id'];
 				$layout_file               = $row['layout_file'];
 				$age_group                 = $row['search_keywords'];
@@ -250,10 +278,42 @@ if ($set_time == date("h:i")) {
 				$custom_label_2 		   = $row['search_keywords'];
 				$custom_label_3  		   = $row['search_keywords'];
 				$custom_label_4  		   = $row['search_keywords'];
+
+
+				if($availability == 'disabled') {
+					$note = 'out of stock';
+				} else if ($availability == 'available') {
+					$note = 'in stock';
+				}
+
+
+				if($brand == '0') {
+					$brand_name = 'Unknown';
+				} else if ($brand == '1') {
+					$brand_name = 'Legacy';
+				} else if ($brand == '2') {
+					$brand_name = 'Steam Freak';
+				} else if ($brand == '3') {
+					$brand_name = 'Brewcraft';
+				} else if ($brand == '4') {
+					$brand_name = 'Brewers Best';
+				} else if ($brand == '5') {
+					$brand_name = 'Muntons';
+				} else if ($brand == '6') {
+					$brand_name = 'Briess';
+				} 
+
+				//function will read how many pages the store has and lopp through the page numbers to
+				//list all possible products
+
+
+				$web_url = 'eckraus.com';
+				$mod_link = $web_url . $link;
+
 	
 				$contents = array("id"=>"$id","title"=>$title,"meta_description"=>$meta_description
-				,"availability"=>$availability,"condition"=>$condition,"price"=>$price
-				,"link"=>$layout_file,"image_link"=>$layout_file,"brand"=>$brand,"brand"=>$brand
+				,"availability"=>$note,"condition"=>$condition,"price"=>$price
+				,"link"=>$mod_link,"image_link"=>$image_link,"brand"=>$brand,"brand"=>$brand_name
 				,"additional_image_link"=>$layout_file, "age_group"=>$age_group, "color"=>$color
 				,"gender"=>$gender , "item_group_id"=>$item_group_id
 				,"google_product_category"=>$google_product_category,  "material"=>$material
@@ -272,7 +332,7 @@ if ($set_time == date("h:i")) {
 				 "pattern"=>"pattern", "product_type"=>"product_type", "sale_price"=>"sale_price",
 				 "sale_price_effective_date"=>"sale_price_effective_date","shipping"=>"shipping" ,
 				 "shipping_weight"=>"shipping_weight" ,"custom_label_0"=>"custom_label_0","custom_label_1"=>"custom_label_1",
-				 "custom_label_2"=>"custom_label_2","custom_label_3"=>"custom_label_3","custom_label_4"=>"custom_label_4");
+				 "custom_label_2"=>"custom_label_2","custom_label_3"=>"custom_label_3","custom_label_4"=>"custom_label_4","Content-Encoding: UTF-8","Content-type: text/csv; charset=UTF-8");
 				//$header = array_keys($row);
 				fputcsv($fp, $header);
 				$header = array_flip($header);
@@ -281,5 +341,5 @@ if ($set_time == date("h:i")) {
 		}
 		fclose($fp);
 		return;
-	}
+	
 ?>
