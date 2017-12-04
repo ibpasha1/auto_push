@@ -278,8 +278,9 @@ fclose($fp);
 				$custom_label_2 		   = $row['search_keywords'];
 				$custom_label_3  		   = $row['search_keywords'];
 				$custom_label_4  		   = $row['search_keywords'];
+				$page_count                = $row['meta']['pagination']['total_pages'];
 
-
+				// 
 				if($availability == 'disabled') {
 					$note = 'out of stock';
 				} else if ($availability == 'available') {
@@ -303,8 +304,11 @@ fclose($fp);
 					$brand_name = 'Briess';
 				} 
 
-				//function will read how many pages the store has and lopp through the page numbers to
+				//this function will read how many pages the store has and lopp through the page numbers to
 				//list all possible products
+
+
+				//this function will strip the description tag of all its html tags and output a fresh description
 
 
 				$web_url = 'eckraus.com';
